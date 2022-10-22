@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define N 10000000
+#define N 1000000
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
@@ -62,13 +62,16 @@ int main(){
 
 	gpuErrchk(cudaMalloc(&d_arr1,sizeof(node1)*N));
 	gpuErrchk(cudaMalloc(&d_arr2,sizeof(node2)));
+
+	printf("SIZEOF ARR1 %ld\n",sizeof(node1));
+	printf("SIZEOF ARR2 %ld\n",sizeof(node2));
 	
 	i=ceil(N/1024)+1;
 
 	cudaEventRecord(start);
 	dKernel1<<<i,1024>>>(d_arr1);
-	cudaEventSynchronize(stop);
 	cudaEventRecord(stop);
+	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&ms,start,stop);
 
 	gpuErrchk( cudaPeekAtLastError() );
@@ -77,8 +80,8 @@ int main(){
 
 	cudaEventRecord(start);
 	dKernel2<<<i,1024>>>(d_arr2);
-	cudaEventSynchronize(stop);
 	cudaEventRecord(stop);
+	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&ms,start,stop);
 	gpuErrchk( cudaPeekAtLastError() );
 	printf("TIME TAKEN BY SOA %f\n",ms);
